@@ -1,0 +1,21 @@
+---
+- name: Detener docker.socket y limpiar reglas iptables
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Detener docker.socket
+      systemd:
+        name: docker.socket
+        state: stopped
+
+    - name: Limpiar reglas iptables
+      command: iptables --flush
+
+    - name: Limpiar reglas iptables de NAT
+      command: iptables -t nat --flush
+
+    - name: Iniciar docker.socket
+      systemd:
+        name: docker
+        state: started

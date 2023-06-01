@@ -1,0 +1,16 @@
+---
+- name: Ping Test
+  hosts: servers
+  gather_facts: false
+
+  vars_files:
+    - inventory/vars.yml
+
+  tasks:
+    - name: Ping hosts
+      ping:
+      register: ping_result
+
+    - name: Display ping results
+      debug:
+        var: ping_result

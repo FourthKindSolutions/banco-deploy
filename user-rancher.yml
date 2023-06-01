@@ -1,0 +1,64 @@
+- name: Crear usuario y claves SSH
+  hosts: all
+  become: true
+
+  vars:
+    user_name: rancher_adm
+    user_password: "$2y$14$CHQZ6Udd4tkU/jamCOnxB.XfZO9q3dD8SjbGprYnohDK/dGxPssEG"
+
+  tasks:
+    - name: Crear usuario
+      user:
+        name: "{{ user_name }}"
+        password: "{{ user_password }}"
+        shell: /bin/bash
+        createhome: yes
+
+    - name: Agregar usuario al grupo wheel
+      user:
+        name: "{{ user_name }}"
+        groups: wheel
+        append: yes
+
+    - name: Agregar usuario al grupo docker
+      user:
+        name: "{{ user_name }}"
+        groups: docker
+        append: yes
+
+    - name: Crear directorio .ssh
+      file:
+        path: "/home/{{ user_name }}/.ssh"
+        state: directory
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0700'
+
+    - name: Crear clave pública para el usuario
+      community.crypto.openssh_keypair:
+        path: "/home/{{ user_name }}/.ssh/id_rsa"
+        type: rsa
+        size: 2048
+        force: false
+
+    - name: Agregar clave pública al usuario
+      authorized_key:
+        user: "{{ user_name }}"
+        key: "{{ lookup('file', '/home/{{ user_name }}/.ssh/id_rsa.pub') }}"
+      when: ansible_user != user_name
+
+    - name: Copiar clave pública a todos los hosts del inventario
+      authorized_key:
+        user: "{{ user_name }}"
+        key: "{{ lookup('file', '/home/{{ user_name }}/.ssh/id_rsa.pub') }}"
+      loop: "{{ ansible_play_hosts_all }}"
+
+    - name: Cambiar permisos de archivos de clave SSH
+      file:
+        path: "/home/{{ user_name }}/.ssh/{{ item }}"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0600'
+      loop:
+        - id_rsa
+        - id_rsa.pub

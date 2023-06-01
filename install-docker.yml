@@ -1,0 +1,62 @@
+- hosts: all
+  become : yes
+
+  tasks:
+    - name: Remover Docker
+      yum:
+        name:
+          - docker
+          - docker-compose-plugin
+          - docker-ce-cli
+          - docker-buildx-plugin
+          - docker-client
+          - docker-client-latest
+          - docker-common
+          - docker-latest
+          - docker-latest-logrotate
+          - docker-logrotate
+          - docker-engine
+        state: absent
+
+    - name: Instalar yum-utils
+      yum:
+        name: yum-utils
+        state: present
+
+
+    - name: Install required packages
+      package:
+        name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+        state: present
+
+    - name: Add Docker repository
+      yum_repository:
+        name: docker-ce-stable
+        description: Docker CE Stable - $basearch
+        baseurl: https://download.docker.com/linux/centos/8/$basearch/stable
+        gpgkey: https://download.docker.com/linux/centos/gpg
+        enabled: yes
+        gpgcheck: yes
+
+    - name: Install Docker
+      package:
+        name:
+          - docker-ce-20.10.0
+          - docker-ce-cli-20.10.0
+          - containerd.io
+        state: present
+
+    - name: Remove daemon.json
+      file:
+        path: /etc/docker/daemon.json
+        state: absent
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
