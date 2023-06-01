@@ -1,0 +1,25 @@
+---
+- name: Add user to docker group
+  hosts: all
+  become: true
+  become_user: root
+  gather_facts: false
+
+  tasks:
+    - name: Check if docker group exists
+      getent:
+        database: group
+        name: docker
+      register: docker_group_check
+
+    - name: Create docker group if it doesn't exist
+      group:
+        name: docker
+        state: present
+      when: docker_group_check.rc != 0
+
+    - name: Add user to docker group
+      user:
+        name: kubec-admin
+        groups: docker
+        append: yes
