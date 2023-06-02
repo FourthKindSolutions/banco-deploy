@@ -1,0 +1,77 @@
+---
+- name: Remove Kubernetes using RKE
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Uninstall RKE and Kubernetes components
+      shell: |
+        rke remove --config /cluster/cluster.yml --force
+
+    - name: Remove Docker
+      apt:
+        name: docker-ce
+        state: absent
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: Remove Docker
+      yum:
+        name: docker-ce
+        state: absent
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat'
+
+    - name: Remove Kubernetes packages
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: absent
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: Remove Kubernetes packages
+      yum:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: absent
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat'
+
+    - name: Remove Kubernetes configuration files
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /etc/kubernetes
+        - /var/lib/kubelet
+        - /etc/cni
+        - /var/lib/etcd
+
+    - name: Remove Kubernetes related directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /var/lib/calico
+        - /opt/cni
+        - /var/run/calico
+        - /var/log/containers
+
+    - name: Remove Kubernetes related iptables rules
+      command: iptables -t nat -F
+
+    - name: Remove Kubernetes related ipvs rules
+      command: ipvsadm --clear
+
+    - name: Remove Kubernetes related systemd units
+      file:
+        path: /etc/systemd/system/{{ item }}
+        state: absent
+      with_items:
+        - kubelet.service
+        - kube-proxy.service
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
