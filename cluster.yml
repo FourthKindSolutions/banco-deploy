@@ -1,67 +1,80 @@
 # If you intended to deploy Kubernetes in an air-gapped environment,
 # please consult the documentation on how to configure custom RKE images.
 nodes:
-- address: "192.168.1.244"
+- address: "10.50.57.133"
   port: ""
-  internal_address: "192.168.1.244"
+  internal_address: "10.50.57.133"
   role: [controlplane, etcd]
-  hostname_override: "k8s-master1-prod"
-  user: "rancher_adm"
+  hostname_override: "mty-ale-dkcm000"
+  user: "kubec-admin"
   docker_socket: ""
   ssh_key: ""
-  ssh_key_path: "/home/rancher_adm/.ssh/id_rsa"
+  ssh_key_path: "/home/kubec-admin/.ssh/id_rsa"
   ssh_cert: ""
   ssh_cert_path: ""
   labels: {}
   taints: []
-- address: "192.168.1.245"
+- address: "10.50.57.134"
   port: ""
-  internal_address: "192.168.1.245"
+  internal_address: "10.50.57.134"
   role: [controlplane, etcd]
-  hostname_override: "k8s-master2-prod"
-  user: "rancher_adm"
+  hostname_override: "mty-ale-dkcm001"
+  user: "kubec-admin"
   docker_socket: ""
   ssh_key: ""
-  ssh_key_path: "/home/rancher_adm/.ssh/id_rsa"
+  ssh_key_path: "/home/kubec-admin/.ssh/id_rsa"
   ssh_cert: ""
   ssh_cert_path: ""
   labels: {}
   taints: []
-- address: "192.168.1.241"
+- address: "10.50.57.135"
   port: ""
-  internal_address: "192.168.1.241"
-  role: [worker]
-  hostname_override: "k8s-worker1-prod"
-  user: "rancher_adm"
+  internal_address: "10.50.57.135"
+  role: [controlplane, etcd]
+  hostname_override: "mty-ale-dkcm002"
+  user: "kubec-admin"
   docker_socket: ""
   ssh_key: ""
-  ssh_key_path: "/home/rancher_adm/.ssh/id_rsa"
+  ssh_key_path: "/home/kubec-admin/.ssh/id_rsa"
   ssh_cert: ""
   ssh_cert_path: ""
   labels: {}
   taints: []
-- address: "192.168.1.68"
+- address: "10.50.57.136"
   port: ""
-  internal_address: "192.168.1.68"
+  internal_address: "10.50.57.136"
   role: [worker]
-  hostname_override: "k8s-worker2-prod"
-  user: "rancher_adm"
+  hostname_override: "mty-ale-dkcw000"
+  user: "kubec-admin"
   docker_socket: ""
   ssh_key: ""
-  ssh_key_path: "/home/rancher_adm/.ssh/id_rsa"
+  ssh_key_path: "/home/kubec-admin/.ssh/id_rsa"
   ssh_cert: ""
   ssh_cert_path: ""
   labels: {}
   taints: []
-- address: "192.168.1.69"
+- address: "10.50.57.137"
   port: ""
-  internal_address: "192.168.1.69"
+  internal_address: "10.50.57.137"
   role: [worker]
-  hostname_override: "k8s-worker3-prod"
-  user: "rancher_adm"
+  hostname_override: "mty-ale-dkcw001"
+  user: "kubec-admin"
   docker_socket: ""
   ssh_key: ""
-  ssh_key_path: "/home/rancher_adm/.ssh/id_rsa"
+  ssh_key_path: "/home/kubec-admin/.ssh/id_rsa"
+  ssh_cert: ""
+  ssh_cert_path: ""
+  labels: {}
+  taints: []
+  - address: "10.50.57.138"
+  port: ""
+  internal_address: "10.50.57.138"
+  role: [worker]
+  hostname_override: "mty-ale-dkcw002"
+  user: "kubec-admin"
+  docker_socket: ""
+  ssh_key: ""
+  ssh_key_path: "/home/kubec-admin/.ssh/id_rsa"
   ssh_cert: ""
   ssh_cert_path: ""
   labels: {}
