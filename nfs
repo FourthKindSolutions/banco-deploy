@@ -1,0 +1,41 @@
+---
+- name: Deploy NFS server and format disk
+  hosts: nfs-server
+  become: true
+  tasks:
+    - name: Create partition on /dev/sdb
+      parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+
+    - name: Format partition as ext4
+      filesystem:
+        fstype: ext4
+        dev: /dev/sdb1
+
+    - name: Create mount point directory
+      file:
+        path: /nfs
+        state: directory
+        mode: "0777"
+
+    - name: Mount disk on /nfs
+      mount:
+        src: /dev/sdb1
+        path: /nfs
+        fstype: ext4
+        opts: defaults
+        state: mounted
+
+    - name: Add entry to /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        line: "/dev/sdb1    /nfs    ext4    defaults    0 0"
+        create: yes
+
+    - name: Set permissions on /nfs for all users
+      file:
+        path: /nfs
+        state: directory
+        mode: "0777"
