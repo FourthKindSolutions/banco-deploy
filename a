@@ -1,16 +1,17 @@
-- name: Crear usuario y claves SSH
+- name: add root key
   hosts: all
   become: true
 
- - name: Copy root public key to all hosts in the inventory
-  authorized_key:
-    user: root
-    key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
-  loop: "{{ ansible_play_hosts_all }}"
+  tasks:
+    - name: Copy root public key to all hosts in the inventory
+      authorized_key:
+        user: root
+        key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+      loop: "{{ ansible_play_hosts_all }}"
 
-- name: Change SSH key file permissions
-  file:
-    path: "/root/.ssh/{{ item }}"
-    owner: root
-    group: root
-    mode: '0600'
+    - name: Change SSH key file permissions
+      file:
+        path: "/root/.ssh/{{ item }}"
+        owner: root
+        group: root
+        mode: '0600'
