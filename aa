@@ -1,0 +1,1 @@
+sudo sed -i 's/#\?AllowTcpForwarding .*/AllowTcpForwarding yes/' /etc/ssh/sshd_config
