@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kong-api-gateway
+  template:
+    metadata:
+      labels:
+        app: kong-api-gateway
+    spec:
+      containers:
+        - name: kong
+          image: kong:2.5.0   # Replace with a stable image of Kong
+          env:
+            - name: KONG_DATABASE
+              value: postgres
+            - name: KONG_PG_HOST
+              value: postgresql-ha
+            - name: KONG_PG_PORT
+              value: "5432"
+            - name: KONG_PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: kong-postgres-credentials
+                  key: username
+            - name: KONG_PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kong-postgres-credentials
+                  key: password
+          ports:
+            - containerPort: 8000
+            - containerPort: 8443
+            - containerPort: 8001
+            - containerPort: 8444
+      volumes:
+        - name: kong-postgres-credentials
+          secret:
+            secretName: kong-postgres-credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-ha
+spec:
+  selector:
+    app: postgresql-ha
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kong-postgres-credentials
+type: Opaque
+data:
+  username: {{username_base64}}
+  password: {{password_base64}}
