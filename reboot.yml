@@ -1,0 +1,20 @@
+---
+- name: Reboot Kubernetes Nodes
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Reboot Node
+      reboot:
+        reboot_timeout: 300
+      register: reboot_result
+
+    - name: Wait for Node to Boot
+      wait_for:
+        host: "{{ inventory_hostname }}"
+        port: 22
+        delay: 10
+        timeout: 600
+        state: started
+      delegate_to: localhost
+      when: reboot_result is changed
