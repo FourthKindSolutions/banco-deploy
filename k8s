@@ -83,13 +83,13 @@ clean_pods() {
 
     case $failure_state in
         failed)
-            kubectl delete pods --field-selector=status.phase=Failed -n $namespace
+            kubectl delete pods --field-selector=status.phase=Failed -A
             ;;
         crashloop)
-            kubectl delete pods --field-selector=status.phase=Running,status.reason=CrashLoopBackOff -n $namespace
+            kubectl delete pods --field-selector=status.phase=Running,status.reason=CrashLoopBackOff -A
             ;;
         evicted)
-            kubectl delete pods --field-selector=status.phase=Failed,status.reason=Evicted -n $namespace
+            kubectl delete pods --field-selector=status.phase=Failed,status.reason=Evicted -A
             ;;
         *)
             echo "Invalid failure state. Please try again."
