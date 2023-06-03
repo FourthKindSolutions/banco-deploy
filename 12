@@ -1,0 +1,11 @@
+curl -sL https://bit.ly/k4k8s | kubectl create -f -
+https://raw.githubusercontent.com/pratikfuse/kind-kubernetes-demo/master/k8s/kong/kong.deployment.yaml
+https://github.com/iammateus/k8s-kong
+https://github.com/blidane/kong-konga-kubernetes
+
+https://github.com/giovanibrioni/kong-k8s-monitoring-tools
+https://github.com/giovanibrioni/kong-k8s-monitoring-tools
+
+$ kubectl apply -f https://raw.githubusercontent.com/pratikfuse/kind-kubernetes-demo/master/k8s/kong/plugins/cors.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/pratikfuse/kind-kubernetes-demo/master/k8s/kong/plugins/jwt.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/pratikfuse/kind-kubernetes-demo/master/k8s/kong/plugins/grpc-gateway.yaml
