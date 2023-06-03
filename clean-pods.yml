@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-deletion-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-deletion
+  template:
+    metadata:
+      labels:
+        app: pod-deletion
+    spec:
+      containers:
+      - name: pod-deletion-container
+        image: ubuntu:latest
+        command: ["sh", "-c", "while true; do sleep 3600; done"] # A simple command to keep the pod running
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "kubectl delete pods --all"] # Command to delete all pods on preStop eventD
