@@ -1,0 +1,21 @@
+kubectl apply -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/v0.13.2/deploy/static/trivy-operator.yaml
+$ kubectl get deployment -n trivy-system
+kubectl logs deployment/trivy-operator -n trivy-system
+kubectl delete -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/v0.13.2/deploy/static/trivy-operator.yaml
+helm repo add aqua https://aquasecurity.github.io/helm-charts/
+helm repo update
+
+helm install trivy-operator ./deploy/helm \
+  --namespace trivy-system \
+  --create-namespace \
+  --set="trivy.ignoreUnfixed=true"
+
+helm install trivy-operator aqua/trivy-operator \
+  --namespace trivy-system \
+  --create-namespace \
+  --set="trivy.ignoreUnfixed=true" \
+  --version 0.13.2
+  
+  
+  helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
+helm repo update
