@@ -1,0 +1,19 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cleanup-failed-pods
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: kubectl
+            image: bitnami/kubectl  # Replace <kubectl-image> with the image containing kubectl, e.g., 'bitnami/kubectl'
+            command: ["kubectl"]
+            args:
+            - "delete"
+            - "pods -A "
+            - "--field-selector=status.phase=Failed"
+          restartPolicy: OnFailure
