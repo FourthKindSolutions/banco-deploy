@@ -1,0 +1,2 @@
+kubectl apply -f https://raw.githubusercontent.com/aquasecurity/starboard/v0.15.12/deploy/static/starboard.yaml
+kubectl apply -f https://raw.githubusercontent.com/aquasecurity/starboard/v0.15.12/deploy/specs/nsa-1.0.yaml
