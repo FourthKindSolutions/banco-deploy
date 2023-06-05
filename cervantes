@@ -1,0 +1,78 @@
+"clusterDomain": "infmtyk8sprod.infosel.mx",
+"persistence.enabled": "true",
+"persistence.size": "10Gi",
+"postgresql.database": "kong",
+"postgresql.password": "1nf0s3l2020$",
+"postgresql.replicaCount": "2",
+"postgresql.repmgrDatabase": "kong",
+"postgresql.repmgrPassword": "1nf0s3l2020$",
+"postgresql.repmgrUsername": "postgres",
+"postgresql.username": "postgres"
+
+
+[root@INFMTYANSBPRO ~]# helm install postgresql-ha  azure/postgresql-ha -f values-postgress.yaml -n gateway --version=6.5.0
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /opt/infosel_ansible/kubernetes_config/infmtyk8sprod/kube_config_cluster-infomty.yml
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /opt/infosel_ansible/kubernetes_config/infmtyk8sprod/kube_config_cluster-infomty.yml
+NAME: postgresql-ha
+LAST DEPLOYED: Tue Dec 13 15:13:00 2022
+NAMESPACE: gateway
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+** Please be patient while the chart is being deployed **
+
+PostgreSQL can be accessed through Pgpool via port 5432 on the following DNS name from within your cluster:
+
+    postgresql-ha-pgpool.gateway.svc.infmtyk8sprod.infosel.mx
+
+Pgpool acts as a load balancer for PostgreSQL and forward read/write connections to the primary node while read-only connections are forwarded to standby nodes.
+
+To get the password for "postgres" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace gateway postgresql-ha-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+
+To get the password for "postgres" run:
+
+    export REPMGR_PASSWORD=$(kubectl get secret --namespace gateway postgresql-ha-postgresql -o jsonpath="{.data.repmgr-password}" | base64 --decode)
+
+To connect to your database run the following command:
+
+    kubectl run postgresql-ha-client --rm --tty -i --restart='Never' --namespace gateway --image marketplace.azurecr.io/bitnami/postgresql-repmgr:11.10.0-debian-10-r55 --env="PGPASSWORD=$POSTGRES_PASSWORD"  \
+        --command -- psql -h postgresql-ha-pgpool -p 5432 -U postgres -d kong
+
+To connect to your database from outside the cluster execute the following commands:
+
+    kubectl port-forward --namespace gateway svc/postgresql-ha-pgpool 5432:5432 &
+    psql -h 127.0.0.1 -p 5432 -U postgres -d kong
+
+
+[root@INFMTYANSBPRO ~]# helm get values -n gateway apikong
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /opt/infosel_ansible/kubernetes_config/infmtyk8sprod/kube_config_cluster-infomty.yml
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /opt/infosel_ansible/kubernetes_config/infmtyk8sprod/kube_config_cluster-infomty.yml
+USER-SUPPLIED VALUES:
+admin:
+  type: ClusterIP
+  useTLS: false
+env:
+  database: postgres
+  headers: "off"
+  pg_database: kong
+  pg_host: postgresql-ha-pgpool.gateway.svc.infmtyk8sprod.infosel.mx
+  pg_password: 1nf0s3l2020$
+  pg_port: 5432
+  pg_user: postgres
+ingressController:
+  installCRDs: false
+livenessProbe:
+  httpGet:
+    scheme: HTTP
+postgresql:
+  enabled: false
+readinessProbe:
+  httpGet:
+    scheme: HTTP
+replicaCount: 1
+[root@INFMTYANSBPRO ~]# 
+
+helm get values -n gateway apikong > upgrade-kong.yaml
