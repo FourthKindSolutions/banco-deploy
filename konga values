@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: konga
+  namespace: gateway
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: konga
+    spec:
+      containers:
+      - name: konga
+        image: pantsel/konga
+        env:
+        - name: DB_ADAPTER
+          value: postgres
+        - name: DB_HOST
+          value: apigate-postgresql-ha-postgresql-0.apigate-postgresql-ha-postgresql-headless.gateway.svc.infmexk8sha.infosel.mx
+          valueFrom:
+            secretKeyRef:
+              name: kongcreds
+              key: postgresdbname
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: kongcreds
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kongcreds
+              key: password
+        - name: DB_DATABASE
+          value: postgres
+        - name: TOKEN_SECRET
+          value: somesecretstring
+        ports:
+        - containerPort: 1337
+          protocol: TCP
