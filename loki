@@ -41,3 +41,12 @@ while IFS= read -r pod; do
   echo "Deleting pod: $pod_name"
   kubectl delete pod "$pod_name" -n "$namespace" --grace-period=0 --force
 done <<< "$pods"
+
+loki-gateway:
+  domain: "k8s-dev.dombase.net"
+helm upgrade loki-gateway <chart-name> -f values.yaml --namespace monitoring
+
+
+
+
+
