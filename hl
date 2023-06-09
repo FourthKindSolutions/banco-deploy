@@ -1,0 +1,5 @@
+helm install loki --namespace loki grafana/loki-stack \
+  --set loki.persistence.enabled=true \
+  --set loki.persistence.storageClassName=local-storage \
+  --set loki.persistence.existingClaim=loki-pvc \
+  --set prometheus.enabled=false
