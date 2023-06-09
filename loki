@@ -28,3 +28,16 @@ global:
   config:
     clusterDomain: "k8s-dev.dombase.net"
 
+#!/bin/bash
+
+namespace="monitoring"
+
+# Get the list of pod names in the specified namespace
+pods=$(kubectl get pods -n "$namespace" -o name)
+
+# Iterate over each pod and delete it with force termination
+while IFS= read -r pod; do
+  pod_name=$(echo "$pod" | cut -d'/' -f2)
+  echo "Deleting pod: $pod_name"
+  kubectl delete pod "$pod_name" -n "$namespace" --grace-period=0 --force
+done <<< "$pods"
