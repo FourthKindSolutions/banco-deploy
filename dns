@@ -1,0 +1,2 @@
+kubectl edit configmap kube-dns -n kube-system
+cluster.local. IN SOA ns.dns.k8s-dev.dombase.net. hostmaster.dns.k8s-dev.dombase.net. (
