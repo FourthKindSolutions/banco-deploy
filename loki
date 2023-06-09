@@ -21,3 +21,10 @@ global:
   
   
     clusterDomain: "cluster.local"
+
+
+
+global:
+  config:
+    clusterDomain: "k8s-dev.dombase.net"
+
