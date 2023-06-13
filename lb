@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Prompt for the Rancher hostname
+read -p "Enter the Rancher hostname (e.g., k8s-dev.4ks.mx): " hostname
+
+# Create a new directory for the NGINX configuration
+config_dir="/etc/nginx/conf.d"
+sudo mkdir -p "$config_dir"
+
+# Generate the NGINX configuration file
+config_file="$config_dir/$hostname.conf"
+sudo tee "$config_file" > /dev/null << EOF
+upstream backend {
+EOF
+
+# Prompt for the backend upstream IP addresses
+backend_ips=()
+while true; do
+  read -p "Enter a backend upstream IP address (leave blank to finish): " ip
+  if [[ -z "$ip" ]]; then
+    break
+  fi
+  backend_ips+=("$ip")
+done
+
+# Add backend upstream IP addresses to the NGINX configuration
+if [[ ${#backend_ips[@]} -eq 0 ]]; then
+  echo "No backend upstream IP addresses provided. Aborting."
+  exit 1
+fi
+
+for ip in "${backend_ips[@]}"; do
+  echo "  server $ip;" | sudo tee -a "$config_file" > /dev/null
+done
+
+# Complete the NGINX configuration file
+sudo tee -a "$config_file" > /dev/null << EOF
+}
+
+server {
+  listen 80;
+
+  location / {
+    proxy_pass http://backend;
+    proxy_set_header Host \$host;
+    proxy_set_header X-Real-IP \$remote_addr;
+    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+  }
+}
+EOF
+
+# Check the NGINX configuration
+sudo nginx -t
+if [[ $? -ne 0 ]]; then
+  echo "Error: NGINX configuration test failed. Aborting."
+  exit 1
+fi
+
+# Restart NGINX to apply the new configuration
+sudo systemctl restart nginx
+
+echo "NGINX load balancer configuration completed!"
