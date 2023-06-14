@@ -1,0 +1,3 @@
+kubectl -n reverse-words create secret generic reversewords-proxy --from-literal=session_secret=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c43)
+kubectl -n reverse-words create serviceaccount reversewords
+kubectl -n reverse-words annotate serviceaccount reversewords serviceaccounts.openshift.io/oauth-redirectreference.reversewords='{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"reverse-words-authenticated"}}'
