@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Array of dashboard file names
+dashboards=(
+  "alertmanager-overview.json"
+  "apiserver.json"
+  "cluster-total.json"
+  "controller-manager.json"
+  "etcd.json"
+  "k8s-coredns.json"
+  "k8s-resources-cluster.json"
+  "k8s-resources-namespace.json"
+  "k8s-resources-node.json"
+  "k8s-resources-pod.json"
+  "k8s-resources-workload.json"
+  "k8s-resources-workloads-namespace.json"
+  "kubelet.json"
+  "namespace-by-pod.json"
+  "namespace-by-workload.json"
+  "nginx.json"
+  "node-cluster-rsrc-use.json"
+  "node-rsrc-use.json"
+  "nodes.json"
+  "performance-debugging.json"
+  "persistentvolumesusage.json"
+  "pod-total.json"
+  "prometheus.json"
+  "proxy.json"
+  "rancher-cluster-nodes.json"
+  "rancher-cluster.json"
+  "rancher-default-home.json"
+  "rancher-etcd-nodes.json"
+  "rancher-etcd.json"
+  "rancher-k8s-components-nodes.json"
+  "rancher-k8s-components.json"
+  "rancher-node-detail.json"
+  "rancher-node.json"
+  "rancher-pod-containers.json"
+  "rancher-pod.json"
+  "rancher-workload-pods.json"
+  "rancher-workload.json"
+  "request-handling-performance.json"
+  "scheduler.json"
+  "workload-total.json"
+)
+
+# Grafana API endpoint and authentication
+GRAFANA_API_URL="http://localhost:3000/api/dashboards/db"
+API_KEY="your_api_key"
+
+# Iterate over the dashboards array and import each dashboard
+for dashboard in "${dashboards[@]}"; do
+  echo "Importing $dashboard..."
+  curl -XPOST -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $API_KEY" \
+    -d "@$dashboard" "$GRAFANA_API_URL"
+  echo "Import of $dashboard completed."
+done
