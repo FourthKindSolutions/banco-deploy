@@ -1,0 +1,102 @@
+http {
+    upstream backend {
+        server 10.50.557.156;
+        server 10.50.557.157;
+        server 10.50.557.158;
+    }
+
+    server {
+        listen 80;
+        server_name *.k8s-dev.dombase-net;
+
+        location / {
+            proxy_pass http://backend;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}
+
+
+http {
+    upstream backend {
+        server 10.50.557.156;
+        server 10.50.557.157;
+        server 10.50.557.158;
+    }
+
+    server {
+        listen 80;
+        server_name *.k8s-dev.dombase-net;
+        return 301 https://$host$request_uri;
+    }
+
+    server {
+        listen 443 ssl;
+        server_name *.k8s-dev.dombase-net;
+
+        ssl_certificate /ruta/al/certificado.crt;
+        ssl_certificate_key /ruta/a/clave_privada.key;
+
+        location / {
+            proxy_pass http://backend;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}
+
+
+-----BEGIN CERTIFICATE-----
+MIIDWzCCAkMCFElJsfcKM1X1jFPNCg/NKdx3PXEgMA0GCSqGSIb3DQEBCwUAMGox
+CzAJBgNVBAYTAk1YMQswCQYDVQQIDAJOTDEMMAoGA1UEBwwDTVRZMRMwEQYDVQQK
+DApCYW5jbyBCYXNlMQswCQYDVQQLDAJJVDEeMBwGA1UEAwwVKi5rOHMtZGV2LmRv
+bWJhc2UubmV0MB4XDTIzMDYxNTEwMTcxM1oXDTI0MDYxNDEwMTcxM1owajELMAkG
+A1UEBhMCTVgxCzAJBgNVBAgMAk5MMQwwCgYDVQQHDANNVFkxEzARBgNVBAoMCkJh
+bmNvIEJhc2UxCzAJBgNVBAsMAklUMR4wHAYDVQQDDBUqLms4cy1kZXYuZG9tYmFz
+ZS5uZXQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDRbg3WxkNlJCIe
+TISfhwvdYPQiM5dv0ZDRAKObHBiQKHtkEgfzN3QBnQ08C4UudKD2oWJjIB2bn/LE
+shKMNgVHSWdVntHLRvQ8jEouUWCgdMBHFsq6i1TmX1Lki3vcgA6/aMpReDKSniSI
+p/mNan/91Xe63oS10lUoV6JIG86OVr8R+fE63lGHm6wRhtwhrOZbavw84acpMTer
+nj4BGboyLsMuyLL0Be2hN3q1Dr2RhKLi6pkH0GBYROmARhP2pS38LW1EQopPTNEn
+Eg8kzGUKlVZhjIhvhoyl401eteLQzC2DMaQwQtZbSxSLIWW95oKuNmgfs4vQSujl
+rH+DIP+lAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAEGwl+9yDuuAiZQ5kkSwgZlq
+QEAh/EqPbCeI7lnwx9jfWe7iZmqURXES0jocKIu7KOypkwMRDk3FP3JJYN2yJ82x
+YuMTZ0NSns+BnwGwfbqdlFundezCbSJVqbQgeWYhFQdDSWvCVFQY2r6UMJiz7lEj
+VF2m4Azx0+TS2s4tsSpgefyY5rmxxgbpWroi9O6tY5JgdjDp7Rii76kbznWWAyH9
+ZDYRSXJbWgw4oyLOciKHnXp3sNUU2ERaNLXxVvFCEPBPZWkjdA8AJdHlnWhgteGh
+LUFsx7sbTAj8CW9Pao07MbXJjfFOUT6Ym7j3o42mdiRkL6yIQI4Eq/FRmtMd/LQ=
+-----END CERTIFICATE-----
+
+-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDRbg3WxkNlJCIe
+TISfhwvdYPQiM5dv0ZDRAKObHBiQKHtkEgfzN3QBnQ08C4UudKD2oWJjIB2bn/LE
+shKMNgVHSWdVntHLRvQ8jEouUWCgdMBHFsq6i1TmX1Lki3vcgA6/aMpReDKSniSI
+p/mNan/91Xe63oS10lUoV6JIG86OVr8R+fE63lGHm6wRhtwhrOZbavw84acpMTer
+nj4BGboyLsMuyLL0Be2hN3q1Dr2RhKLi6pkH0GBYROmARhP2pS38LW1EQopPTNEn
+Eg8kzGUKlVZhjIhvhoyl401eteLQzC2DMaQwQtZbSxSLIWW95oKuNmgfs4vQSujl
+rH+DIP+lAgMBAAECggEAC7vCfzq26mr6lV98m7J1ffbxXpws2xku56LFR8qsbqEx
+/pKLCvubnn6F0AwmL0rd/MtgZ4TUW9R7hb0jUGMzawHIDhI6l0y3oM/MVSl+hCbe
+Ye07OPXW8Rw8mOzeqOUszlkI4sUc8j11dwmQL/XcS2SjE19lqIkq97pnL2qNaUiF
+W+xvB6hRy73ru62a//PwB6aXD6MokSWIocQUp5a7B6XppF71kDHtfzKnM/mHRHSY
+wzgEBn0rW3E943tjs/fxagtrkk7kprnWz+5iM6KHzPki81rxUCWBYFdl2U0TIcZU
+HzsHMuUKhIjU96gSQR17CrrW14Q/x3Fa2+Yvg9VOEQKBgQDUgOF+BUCXNfQZ9IWU
+rO3MjyFvIXKSnFVxcDtsO/JHTtqtIPGPbGQ0MCeR5gRBkL03YR7H/Tnu2yNQDCbY
+IFDV/1AEDUaGhgMpDw2MCXMfA+pbAG6nvviHDBY3mfd7Mff2w1hbfg+I5fFtxYBw
+jyuYURYcxIRAgabQoF+fUzPfsQKBgQD8TB7ZqKrJUn5ZgoxX/k+4yrFaDh6FLndJ
+RSZOge7hARGWIVILhHXE3gJNnf4/se70S8t8XT8TVuq9iUxHQ5cgrpi6Kbjtls9c
+xpYvnTBZ+8u0Px4TO0dFNwV+cQfuR9Yw0abzMCK3B2jrmvlRjPFAoSXVDH9mqNV4
+sf436bqwNQKBgB4cHNdEW0CRroK2+O52CkO/zBb5AEjxydGG+4R8gfnEnIuHbXLL
+Au+6GwE7PEMmBQmBw2DG6pyDhF9lOWPKQGnyAR5x2xpYhr4cmejLtfohDeXTC9rM
+3l4UQlmigUR9cgsO5sgf9oeJPUo2f9pzDtRIOP/egHa7aC2La8EhguohAoGBANJk
+uCVSnnmcrXj/gQGwNdMoVJWAyLrPcPJNFBDMEeTY+01zI/Qu1fcCHHGVm3yKaXaX
+7m0bZYo/JSpB4LZdCx5Z+0rjmC+pX+tCP+Qc9UFU1R7Os8nd2SVDKPW0VKTEiz3S
+16JdNdXj+/7eEaOMIXN/7winj2aQzNQFurXt150xAoGAcJhROO73LtoqwVw7TTII
+RM7XRdMncEPO4eI848v8EH26MkvT3F3k0z56go8MiEi9rhZ3m9qyM4l4wfc9Knf5
+Z1Js0VnUqzO+AXLcb8VBLoHd3S8BPPqrYRolFVsOV4FPSEz3h2W1pgMN4Gpq5PlL
+RCHn0/YmIDQ+p2g98PKjWRg=
+-----END PRIVATE KEY-----
