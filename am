@@ -1,0 +1,427 @@
+https://github.com/prometheus/prometheus/releases/download/v2.45.0-rc.0/prometheus-2.45.0-rc.0.linux-amd64.tar.gz
+groups:
+  - name: critical_alerts
+    rules:
+      #- alert: Servidor no responde - Critical
+      #expr: up == 0
+      #for: 1m
+      #labels:
+      #severity: critical
+      #annotations:
+      #summary: Servidor {{ $labels.instance }} no responde - Critical
+      #description: "{{$labels.instance}} of job {{$labels.job}} has been down for more than 5 minutes."
+
+########Node Exporter Linux
+     - alert: Linux CPU mayor a 90% - Critical
+       expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{job!="linux_centos_spei",mode="idle"}[2m])) * 100) >= 90
+       for: 2m
+       labels:
+         severity: critical
+       annotations:
+         summary: Linux CPU mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Linux Memoria mayor a 90% - Critical
+       expr: (1 - (node_memory_MemAvailable_bytes{job!="linux_centos_spei"} / node_memory_MemTotal_bytes{job!="linux_centos_spei"})) * 100 >= 90
+       for: 2m
+       labels:
+         severity: critical
+       annotations:
+         summary: Linux Memoria mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Linux Swap mayor a 90% - Critical
+       expr: (1 - (node_memory_SwapFree_bytes{job!="linux_centos_spei"} / node_memory_SwapTotal_bytes{job!="linux_centos_spei"})) * 100 >= 90
+       for: 2m
+       labels:
+         severity: critical
+       annotations:
+         summary: Linux Swap mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Linux Disco mayor a 90% - Critical
+       expr: (1 - (node_filesystem_avail_bytes{job!="linux_centos_spei",mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes{job!="linux_centos_spei",mountpoint="/",fstype!="rootfs"})) * 100 >= 90 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+       for: 5m
+       labels:
+         severity: critical
+       annotations:
+         summary: Linux Disco mayor a 90% en {{ $labels.instance }} - Critical
+
+     #- alert: Linux Certificado SSL expira en 14 días - Critical
+     #  expr: ssl_verified_cert_not_after{chain_no="0"} - time() <= 86400 * 14
+     #  for: 0m
+     #  labels:
+     #    severity: critical
+     #  annotations:
+     #    summary: Linux Certificado SSL expira en 14 días en {{ $labels.instance }} - Critical
+
+########Custom Linux Collector (--collector.textfile.directory=/var/lib/monitoring)
+     - alert: Linux Proceso inactivo - Critical
+       expr: custom_processes_status{job="linux_centos"} < 1
+       for: 1m
+       labels:
+         severity: critical
+       annotations:
+         summary: Linux Proceso {{ $labels.name }} inactivo en {{ $labels.instance }} - Critical
+
+     - alert: Linux Log con errores - Critical
+       expr: custom_logs_error{job="linux_centos"} > 0
+       for: 1m
+       labels:
+         severity: critical
+       annotations:
+         summary: Linux Log {{ $labels.name }} con errores en {{ $labels.instance }} - Critical
+
+########WINDOWS
+     - alert: Windows CPU mayor a 90% - Critical
+       expr: 100 - (avg by(instance) (rate(windows_cpu_time_total{job!="windows_spei",mode="idle"}[2m])) * 100) >= 90
+       for: 2m
+       labels:
+         severity: critical
+       annotations:
+         summary: Windows CPU mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Windows Memoria mayor a 90% - Critical
+       expr: 100 - ((windows_os_physical_memory_free_bytes{job!="windows_spei"} / windows_cs_physical_memory_bytes{job!="windows_spei"}) * 100) >= 90
+       for: 2m
+       labels:
+         severity: critical
+       annotations:
+         summary:  Windows Memoria mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Windows Memoria Virtual mayor a 90% - Critical
+       expr: 100 - ((windows_os_paging_free_bytes{job!="windows_spei"} / windows_os_paging_limit_bytes{job!="windows_spei"}) * 100) >= 90
+       for: 2m
+       labels:
+         severity: critical
+       annotations:
+         summary:  Windows Memoria Virtual mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Windows Disco mayor a 90% - Critical
+       expr: 100.0 - 100 * ((windows_logical_disk_free_bytes{job!="windows_spei"} / 1024 / 1024 ) / (windows_logical_disk_size_bytes{job!="windows_spei"} / 1024 / 1024)) >= 90
+       for: 5m
+       labels:
+         severity: critical
+       annotations:
+         summary: Windows Disco mayor a 90% en {{ $labels.instance }} - Critical
+groups:
+  - name: critical_spei_alerts
+    rules:
+      #- alert: Servidor no responde - Critical
+      #expr: up == 0
+      #for: 1m
+      #labels:
+      #severity: critical
+      #annotations:
+      #summary: Servidor {{ $labels.instance }} no responde - Critical
+      #description: "{{$labels.instance}} of job {{$labels.job}} has been down for more than 5 minutes."
+
+########Node Exporter Linux
+     - alert: Linux CPU mayor a 90% - Critical
+       expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{job="linux_centos_spei",mode="idle"}[2m])) * 100) >= 90
+       for: 2m
+       labels:
+         severity: critical_spei
+       annotations:
+         summary: Linux CPU mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Linux Memoria mayor a 90% - Critical
+       expr: (1 - (node_memory_MemAvailable_bytes{job="linux_centos_spei"} / node_memory_MemTotal_bytes{job="linux_centos_spei"})) * 100 >= 90
+       for: 2m
+       labels:
+         severity: critical_spei
+       annotations:
+         summary: Linux Memoria mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Linux Swap mayor a 90% - Critical
+       expr: (1 - (node_memory_SwapFree_bytes{job="linux_centos_spei"} / node_memory_SwapTotal_bytes{job="linux_centos_spei"})) * 100 >= 90
+       for: 2m
+       labels:
+         severity: critical_spei
+       annotations:
+         summary: Linux Swap mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Linux Disco mayor a 90% - Critical
+       expr: (1 - (node_filesystem_avail_bytes{job="linux_centos_spei",mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes{job="linux_centos_spei",mountpoint="/",fstype!="rootfs"})) * 100 >= 90 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+       for: 5m
+       labels:
+         severity: critical_spei
+       annotations:
+         summary: Linux Disco mayor a 90% en {{ $labels.instance }} - Critical
+
+########Custom Linux Collector (--collector.textfile.directory=/var/lib/monitoring)
+     - alert: Linux Proceso inactivo - Critical
+       expr: custom_processes_status{job="linux_centos_spei"} < 1
+       for: 1m
+       labels:
+         severity: critical_spei
+       annotations:
+         summary: Linux Proceso {{ $labels.name }} inactivo en {{ $labels.instance }} - Critical
+
+     - alert: Linux Log con errores - Critical
+       expr: custom_logs_error{job="linux_centos_spei"} > 0
+       for: 1m
+       labels:
+         severity: critical_spei
+       annotations:
+         summary: Linux Log {{ $labels.name }} con errores en {{ $labels.instance }} - Critical
+
+########WINDOWS
+     - alert: Windows CPU mayor a 90% - Critical
+       expr: 100 - (avg by(instance) (rate(windows_cpu_time_total{job="windows_spei",mode="idle"}[2m])) * 100) >= 90
+       for: 2m
+       labels:
+         severity: critical_spei
+       annotations:
+         summary: Windows CPU mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Windows Memoria mayor a 90% - Critical
+       expr: 100 - ((windows_os_physical_memory_free_bytes{job="windows_spei"} / windows_cs_physical_memory_bytes{job="windows_spei"}) * 100) >= 90
+       for: 2m
+       labels:
+         severity: critical_spei
+       annotations:
+         summary:  Windows Memoria mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Windows Memoria Virtual mayor a 90% - Critical
+       expr: 100 - ((windows_os_paging_free_bytes{job="windows_spei"} / windows_os_paging_limit_bytes{job="windows_spei"}) * 100) >= 90
+       for: 2m
+       labels:
+         severity: critical_spei
+       annotations:
+         summary:  Windows Memoria Virtual mayor a 90% en {{ $labels.instance }} - Critical
+
+     - alert: Windows Disco mayor a 90% - Critical
+       expr: 100.0 - 100 * ((windows_logical_disk_free_bytes{job="windows_spei"} / 1024 / 1024 ) / (windows_logical_disk_size_bytes{job="windows_spei"} / 1024 / 1024)) >= 90
+       for: 5m
+       labels:
+         severity: critical_spei
+       annotations:
+         summary: Windows Disco mayor a 90% en {{ $labels.instance }} - Critical
+groups:
+  - name: example_alert
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "Instance {{ $labels.instance }} down"
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes."
+global:
+  scrape_interval: 5s
+
+rule_files:
+  - "warning_alerts.yaml"
+  - "critical_alerts.yaml"
+  - "critical_spei.yaml"
+  - 'prometheus.rules.yml'
+
+scrape_configs:
+  - job_name: 'federated_prometheus'
+    scrape_interval: 5s
+    honor_labels: true
+    metrics_path: '/federate'
+    params:
+      'match[]':
+        - '{__name__=~".+"}'
+    static_configs:
+      - targets:
+        - 'federated.k8s-dev.4ks.mx:32117'
+
+  - job_name: 'federated'
+    metrics_path: '/federate'
+    params:
+      match[]:
+        - '{job=~"vmware_vcenter|vmware_esx|node_exporter|k8s_node_exporter"}'
+    static_configs:
+      - targets:
+        - 'federated.k8s-dev.4ks.mx:32117'
+
+  - job_name: 'vmware_vcenter'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+        - 'vc.4ks.mx'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9272
+
+  - job_name: 'vmware_esx'
+    metrics_path: '/metrics'
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/esx.yml
+    params:
+      section: [esx]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9272
+
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'node_exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9100']
+      - targets: ['192.168.1.80:9676']
+      - targets: ['[2001:470:1:1ee::82]:59100']
+      - targets: ['wg.s2yue625shgqeevwtoday.online']
+      - targets: ['192.168.1.124:9676']
+      - targets: ['192.168.1.125:9676']
+      - targets: ['192.168.1.214:9676']
+      - targets: ['192.168.1.79:9676']
+      - targets: ['192.168.1.81:9676']
+
+  - job_name: telegraf
+    static_configs:
+      - targets:
+         - localhost:9126
+
+#  - job_name: 'blackbox_exporter'
+#    scrape_interval: 5s
+#    static_configs:
+#      - targets:
+#        - localhost:9115
+#        labels:
+#          group: 'production'
+
+  - job_name: 'grafana'
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+        - localhost:3000
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - localhost:9093
+
+groups:
+- name: vmware.rules
+  rules:
+  - alert: VMWarnMemoryUsage
+    expr: ((vmware_vm_mem_usage_average / 100) >= 90) and ((vmware_vm_mem_usage_average
+      / 100) < 95)
+    for: 30m
+    labels:
+      severity: warning
+    annotations:
+      title: 'High memory usage on {{ $labels.instance }}: {{ $value | printf "%.2f"
+        }}%'
+  - alert: VMCritMemoryUsage
+    expr: ((vmware_vm_mem_usage_average / 100) >= 95)
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      title: 'Very High memory usage on {{ $labels.instance }}: {{ $value | printf
+        "%.2f" }}%'
+  - alert: VMWarnNumberSnapshots
+    expr: (vmware_vm_snapshots < 3)
+    for: 30m
+    labels:
+      severity: warning
+    annotations:
+      title: 'High snapshots number on {{ $labels.instance }}: {{ $value }}'
+  - alert: VMCritNumberSnapshots
+    expr: (vmware_vm_snapshots >= 3)
+    for: 30m
+    labels:
+      severity: critical
+    annotations:
+      title: 'Very high snapshot number on {{ $labels.instance }}: {{ $value }}'
+  - alert: VMWarnAgeSnapshots
+    expr: ((time() - vmware_vm_snapshot_timestamp_seconds) / (60 * 60 * 24) >= 7)
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Outdated snapshot on {{ $labels.instance }}: {{ $value | printf "%.0f"
+        }} days'
+groups:
+  - name: warning_alerts
+    rules:
+######NODE EXPORTER LINUX
+     - alert: Linux CPU mayor a 80% - Warning
+       expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) >= 80 and 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) < 90
+       for: 2m
+       labels:
+         severity: warning
+       annotations:
+         summary: Linux CPU mayor a 80% en {{ $labels.instance }} - Warning
+
+     - alert: Linux Memoria mayor a 80% - Warning
+       expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 >= 80 and (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 < 90
+       for: 2m
+       labels:
+         severity: warning
+       annotations:
+         summary: Linux Memoria mayor a 80% en {{ $labels.instance }} - Warning
+
+     - alert: Linux Swap mayor a 80% - Warning
+       expr: (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 >= 80 and (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 < 90
+       for: 2m
+       labels:
+         severity: warning
+       annotations:
+         summary: Linux Swap mayor a 80% en {{ $labels.instance }} - Warning
+
+     - alert: Linux Disco mayor a 80% - Warning
+       expr: (1 - (node_filesystem_avail_bytes{mountpoint="/", fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/", fstype!="rootfs"})) * 100 >= 80 and (1 - (node_filesystem_avail_bytes{mountpoint="/", fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/", fstype!="rootfs"})) * 100 < 90 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+       for: 5m
+       labels:
+         severity: warning
+       annotations:
+         summary: Linux Disco mayor a 80% en {{ $labels.instance }} - Warning
+
+     - alert: Linux Certificado SSL expira entre 14 y 30 días - Warning
+       expr: ssl_verified_cert_not_after{chain_no="0"} - time() > 86400 * 14 and ssl_verified_cert_not_after{chain_no="0"} - time() <= 86400 * 30
+       for: 0m
+       labels:
+         severity: warning
+       annotations:
+         summary: Linux Certificado SSL expira entre 14 y 30 días en {{ $labels.instance }} - Warning
+
+########WINDOWS
+     - alert: Windows CPU mayor a 80% - Warning
+       expr: 100 - (avg by(instance) (rate(windows_cpu_time_total{mode="idle"}[2m])) * 100) >= 80 and 100 - (avg by(instance) (rate(windows_cpu_time_total{mode="idle"}[2m])) * 100) < 90
+       for: 2m
+       labels:
+         severity: warning
+       annotations:
+         summary: Windows CPU mayor a 80% en {{ $labels.instance }} - Warning
+
+     - alert: Windows Memoria mayor a 80% - Warning
+       expr: 100 - ((windows_os_physical_memory_free_bytes / windows_cs_physical_memory_bytes) * 100) >= 80 and 100 - ((windows_os_physical_memory_free_bytes / windows_cs_physical_memory_bytes) * 100) < 90
+       for: 2m
+       labels:
+         severity: warning
+       annotations:
+         summary:  Windows Memoria mayor a 80% en {{ $labels.instance }} - Warning
+
+     - alert: Windows Memoria Virtual mayor a 80% - Warning
+       expr: 100 - ((windows_os_paging_free_bytes / windows_os_paging_limit_bytes) * 100) >= 80 and 100 - ((windows_os_paging_free_bytes / windows_os_paging_limit_bytes) * 100) < 90
+       for: 2m
+       labels:
+         severity: warning
+       annotations:
+         summary:  Windows Memoria Virtual mayor a 80% en {{ $labels.instance }} - Warning
+
+     - alert: Windows Disco mayor a 80% - Warning
+       expr: 100.0 - 100 * ((windows_logical_disk_free_bytes / 1024 / 1024 ) / (windows_logical_disk_size_bytes / 1024 / 1024)) >= 80 and 100.0 - 100 * ((windows_logical_disk_free_bytes / 1024 / 1024 ) / (windows_logical_disk_size_bytes / 1024 / 1024)) < 90
+       for: 5m
+       labels:
+         severity: warning
+       annotations:
+         summary: Windows Disco mayor a 80% en {{ $labels.instance }} - Warning
