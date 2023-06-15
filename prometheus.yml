@@ -1,0 +1,101 @@
+global:
+  scrape_interval: 5s
+
+rule_files:
+  - "warning_alerts.yaml"
+  - "critical_alerts.yaml"
+  - "critical_spei.yaml"
+  - 'prometheus.rules.yml'
+
+scrape_configs:
+  - job_name: 'federated_prometheus'
+    scrape_interval: 5s
+    honor_labels: true
+    metrics_path: '/federate'
+    params:
+      'match[]':
+        - '{__name__=~".+"}'
+    static_configs:
+      - targets:
+        - 'federated.k8s-dev.4ks.mx:32117'
+
+  - job_name: 'federated'
+    metrics_path: '/federate'
+    params:
+      match[]:
+        - '{job=~"vmware_vcenter|vmware_esx|node_exporter|k8s_node_exporter"}'
+    static_configs:
+      - targets:
+        - 'federated.k8s-dev.4ks.mx:32117'
+
+  - job_name: 'vmware_vcenter'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+        - 'vc.4ks.mx'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9272
+
+  - job_name: 'vmware_esx'
+    metrics_path: '/metrics'
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/esx.yml
+    params:
+      section: [esx]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9272
+
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'node_exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9100']
+      - targets: ['192.168.1.80:9676']
+      - targets: ['[2001:470:1:1ee::82]:59100']
+      - targets: ['wg.s2yue625shgqeevwtoday.online']
+      - targets: ['192.168.1.124:9676']
+      - targets: ['192.168.1.125:9676']
+      - targets: ['192.168.1.214:9676']
+      - targets: ['192.168.1.79:9676']
+      - targets: ['192.168.1.81:9676']
+
+  - job_name: telegraf
+    static_configs:
+      - targets:
+         - localhost:9126
+
+#  - job_name: 'blackbox_exporter'
+#    scrape_interval: 5s
+#    static_configs:
+#      - targets:
+#        - localhost:9115
+#        labels:
+#          group: 'production'
+
+  - job_name: 'grafana'
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+        - localhost:3000
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - localhost:9093
+
