@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Set the base URL of your Grafana instance
+GRAFANA_URL="http://10.50.57.155:3000"
+
+# Set the API key or username/password for authentication
+AUTH_TOKEN="your_api_key_or_credentials"
+
+# Set the path to the folder containing the JSON files
+DASHBOARD_FOLDER="/root/dashboards"
+
+# Iterate over each JSON file in the folder
+for file in $DASHBOARD_FOLDER/*.json; do
+    # Extract the dashboard name from the file name
+    dashboard_name=$(basename "$file" .json)
+
+    # Import the dashboard using the Grafana API
+    response=$(curl -sS -X POST \
+        -H "Authorization: Bearer $AUTH_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d @"$file" \
+        "$GRAFANA_URL/api/dashboards/db")
+
+    # Check the response for any errors
+    if [[ $response == *"success"* ]]; then
+        echo "Dashboard '$dashboard_name' imported successfully."
+    else
+        echo "Failed to import dashboard '$dashboard_name'. Error: $response"
+    fi
+done
