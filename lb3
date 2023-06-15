@@ -9,12 +9,10 @@
 #      server 192.168.1.87:443;
 #      server 192.168.1.122:443;
 #      server 192.168.1.124:443;
-       server 192.168.1.79:443 max_fails=3 fail_timeout=5s;
-       server 192.168.1.124:443 max_fails=3 fail_timeout=5s;
-       server 192.168.1.125:443 max_fails=3 fail_timeout=5s;
-       server 192.168.1.214:443 max_fails=3 fail_timeout=5s;
-       server 192.168.1.80:443 max_fails=3 fail_timeout=5s;
-       server 192.168.1.81:443 max_fails=3 fail_timeout=5s;
+       server 10.50.57.135:443 max_fails=3 fail_timeout=5s;
+       server 10.50.57.136:443 max_fails=3 fail_timeout=5s;
+       server 10.50.57.137:443 max_fails=3 fail_timeout=5s;
+       server 10.50.57.138:443 max_fails=3 fail_timeout=5s;
 
    }
 
@@ -28,16 +26,16 @@
 #          proxy_pass http://backend;
 #      }
 server {
-   listen 80;
-   server_name k8s-dev.4ks.mx;
-   return 301 https://k8s-dev.4ks.mx$request_uri;
+   listen 80 default_server;
+   server_name _;
+   return 301 https://k8s-dev.dombase.net$request_uri;
  }
 
 server {
    listen 443 ssl;
    server_name k8s-dev.4ks.mx;
-   ssl_certificate /etc/letsencrypt/live/k8s-dev.4ks.mx/fullchain.pem;
-   ssl_certificate_key /etc/letsencrypt/live/k8s-dev.4ks.mx/privkey.pem;
+   ssl_certificate  /etc/nginx/certs/cert.crt;
+   ssl_certificate_key /etc/nginx/certs/cert.key;
    ssl_prefer_server_ciphers on;
 
     location / {
@@ -52,7 +50,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
 #   location / {
 #        proxy_pass http://backend;
-
+sudo yum install -y https://dl.grafana.com/oss/release/grafana-10.0.0-1.x86_64.rpm
 
 #        proxy_set_header        Host $host;
 #        proxy_set_header        X-Real-IP $remote_addr;
