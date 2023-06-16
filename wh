@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network-policy
+  namespace: test-aislado
+spec:
+  podSelector:
+    matchLabels:
+  ingress: []
+  egress: []
+
+kubectl annotate namespace/test field.cattle.io/projectName=test
+
+el webhook 
+
+https://chat.googleapis.com/v1/spaces/AAAA2N1NxKc/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=Bt1oieZ9jrxWZylC__llWD-ruWoZPZ60hhl0LDfyAN4 
