@@ -1,0 +1,23 @@
+
+# Create systemd unit file
+nano /etc/systemd/system/alertmanager.service
+
+### Alertmanager systemd 
+[Unit]
+Description=Alertmanager
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=alertmanager
+Group=alertmanager
+Type=simple
+WorkingDirectory=/etc/alertmanager/
+ExecStart=/usr/local/bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --web.external-url http://0.0.0.0:9093
+
+[Install]
+WantedBy=multi-user.target
+
+# Run service
+systemctl daemon-reload
+systemctl restart alertmanager
