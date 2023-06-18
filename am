@@ -1,1 +1,22 @@
 https://chat.googleapis.com/v1/spaces/AAAA2N1NxKc/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=Bt1oieZ9jrxWZylC__llWD-ruWoZPZ60hhl0LDfyAN4
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.example.com:587'
+  smtp_from: 'alertmanager@example.com'
+  smtp_auth_username: 'username'
+  smtp_auth_password: 'password'
+
+route:
+  group_by: ['alertname', 'cluster']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+  receiver: 'google-chat'
+
+receivers:
+- name: 'google-chat'
+  webhook_configs:
+  - url: 'https://chat.googleapis.com/v1/spaces/AAAA2N1NxKc/messages?key=YOUR_API_KEY&token=YOUR_TOKEN'
+
+templates:
+- '/etc/alertmanager/template/*.tmpl'
