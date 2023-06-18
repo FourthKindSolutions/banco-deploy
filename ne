@@ -4,16 +4,23 @@
   become: true
   vars:
     node_exporter_version: "1.2.0" # Change this to the desired version
+    node_exporter_local_path: "/tmp/node_exporter.tar.gz"
+    node_exporter_remote_path: "/tmp/node_exporter.tar.gz"
 
   tasks:
     - name: Download node_exporter
       get_url:
         url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
-        dest: /tmp/node_exporter.tar.gz
+        dest: "{{ node_exporter_local_path }}"
+
+    - name: Transfer node_exporter to remote server
+      ansible.builtin.copy:
+        src: "{{ node_exporter_local_path }}"
+        dest: "{{ node_exporter_remote_path }}"
 
     - name: Extract node_exporter
       ansible.builtin.unarchive:
-        src: /tmp/node_exporter.tar.gz
+        src: "{{ node_exporter_remote_path }}"
         dest: /opt
         remote_src: true
         creates: "/opt/node_exporter-{{ node_exporter_version }}"
